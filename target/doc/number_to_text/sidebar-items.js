@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":[["ASCII_ZERO_OFFSET",""],["MAX_DIGITS",""],["NUMBER_TO_TEST",""],["ONES",""],["TEENS",""],["TENS",""],["THOUSANDS",""]],"fn":[["main",""],["number_to_words",""]]};
