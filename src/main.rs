@@ -70,10 +70,11 @@ fn number_to_words(number: f64) -> String {
     if digits_as_bytes.len() > MAX_DIGITS {
         return "* * * * * * * NUMBER TOO LARGE * * * * * * *".to_string();
     }
+    // Modify digits so we can simply compare ints 
     for _digit in digits_as_bytes.iter_mut() {
         *_digit -= ASCII_ZERO_OFFSET;
     }
-    // Reverse iterate over digits
+    // Reverse iterate over digits in order to build our output string
     for mut _i in (0..digits_as_bytes.len()).rev() {
         if should_skip_next_iteration {
             should_skip_next_iteration = false;
@@ -82,7 +83,7 @@ fn number_to_words(number: f64) -> String {
         let next_digit = digits_as_bytes[_i];
         let column = digits_as_bytes.len() - (_i + 1);
 
-        // Determine if ones, tens, or hundreds column
+        // Determine if digit is in the ones, tens or hundreds column
         match column % 3 {
             0 => {
                 // Ones
