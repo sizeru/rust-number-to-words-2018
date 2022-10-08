@@ -54,7 +54,7 @@ fn main() {
 }
 
 fn number_to_words(number: f64) -> String {
-    let mut all_zeros: bool = true;
+    let mut all_zeros = true;
     let mut should_skip_next_iteration = false;
     let mut result = String::from("");
     let mut temp: String;
@@ -63,7 +63,7 @@ fn number_to_words(number: f64) -> String {
     let number = num::abs(number);
 
     // Convert integer portion of value to string
-    let rounded: f64 = num::Float::round(number);
+    let rounded = num::Float::round(number);
 
     // Convert integer portion of value to string
     let mut digits_as_bytes = rounded.to_string().into_bytes();
