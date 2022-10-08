@@ -46,7 +46,7 @@ const THOUSANDS: [&str; 10] = [
 ];
 
 const ASCII_ZERO_OFFSET: u8 = 48;
-const NUMBER_TO_TEST: f64 = 78345929533.333;
+const NUMBER_TO_TEST: f64 = 12345.6789;
 
 fn main() {
     // test here
@@ -143,6 +143,6 @@ fn number_to_words(number: f64) -> String {
     }
     // Append fractional portion/cents
     let cents = number - num::Float::floor(number);
-    result = result + "and " + &format!("{:}/100", num::Float::floor(cents * 100.0));
+    result = result + "and " + &format!("{:}/100", num::Float::round(cents * 100.0));
     result
 }
