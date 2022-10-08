@@ -63,7 +63,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(number: T) -> String {
     // Convert integer portion of value to string
     let mut digits_as_bytes = rounded.to_string().into_bytes();
     if digits_as_bytes.len() > MAX_DIGITS {
-        return "* * * * * * * NUMBER TOO LARGE * * * * * * *".to_string();
+        return "* * * * * * * NUMBER TOO LARGE * * * * * * *".to_owned();
     }
     // Modify digits so we can simply compare ints
     for _digit in digits_as_bytes.iter_mut() {
@@ -85,19 +85,19 @@ pub fn number_to_words<T: std::convert::Into<f64>>(number: T) -> String {
                 let mut show_thousands = true;
                 if i == 0 {
                     // First digit in number (last in loop)
-                    temp = ONES[next_digit as usize].to_string() + " ";
+                    temp = ONES[next_digit as usize].to_owned() + " ";
                 } else if digits_as_bytes[i - 1] == 1 {
                     // This digit is part of "teen" value
-                    temp = TEENS[next_digit as usize].to_string() + " ";
+                    temp = TEENS[next_digit as usize].to_owned() + " ";
                     // Skip tens position
                     should_skip_next_iteration = true;
                 } else if next_digit != 0 {
                     // Any non-zero digit
-                    temp = ONES[next_digit as usize].to_string() + " ";
+                    temp = ONES[next_digit as usize].to_owned() + " ";
                 } else {
                     // This digit is zero. If digits in tens and hundreds
                     // column are also zero, don't show "thousands"
-                    temp = "".to_string();
+                    temp = "".to_owned();
                     show_thousands =
                         digits_as_bytes[i - 1] != 0 || (i > 1 && digits_as_bytes[i - 2] != 0);
                 }
@@ -105,18 +105,18 @@ pub fn number_to_words<T: std::convert::Into<f64>>(number: T) -> String {
                 if show_thousands {
                     if column > 0 {
                         temp = temp
-                            + &(THOUSANDS[column / 3].to_string()
+                            + &(THOUSANDS[column / 3].to_owned()
                                 + if all_zeros { " " } else { ", " });
                     }
                     // Non-zero digit found
                     all_zeros = false;
                 }
-                result = (temp.clone() + &result).to_string();
+                result = (temp.clone() + &result).to_owned();
             }
             1 => {
                 // Tens
                 if next_digit > 0 {
-                    temp = TENS[next_digit as usize].to_string()
+                    temp = TENS[next_digit as usize].to_owned()
                         + (if digits_as_bytes[i + 1] != 0 {
                             "-"
                         } else {
@@ -128,7 +128,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(number: T) -> String {
             2 => {
                 // Hundreds
                 if next_digit > 0 {
-                    temp = ONES[next_digit as usize].to_string() + " hundred ";
+                    temp = ONES[next_digit as usize].to_owned() + " hundred ";
                     result = temp + &result;
                 }
             }
