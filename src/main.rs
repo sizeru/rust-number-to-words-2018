@@ -1,10 +1,13 @@
-// Based on Original C# implementation by Jonathan Wood
-// Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
-//
-// Rust implementation
-// Copyright (c) NexPro 2022
-// Licensed under the MIT license.
-//
+/*  
+    Rust implementation program to convert u64 number to a string of words
+
+    Copyright (c) NexPro 2022
+    
+    Based on Original C# implementation by Jonathan Wood
+    Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
+
+    Licensed under the MIT license.
+ */
 
 extern crate num;
 
