@@ -2,7 +2,7 @@
     Rust implementation program to convert u64 number to a string of words
 
     Copyright (c) NexPro 2022
-    
+
     Based on Original C# implementation by Jonathan Wood
     Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
 
@@ -56,6 +56,7 @@ fn main() {
     println!("{}", number_to_words(NUMBER_TO_TEST));
 }
 
+/// .
 fn number_to_words(number: f64) -> String {
     let mut all_zeros = true;
     let mut should_skip_next_iteration = false;
