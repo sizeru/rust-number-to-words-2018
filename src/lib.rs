@@ -149,10 +149,8 @@ pub fn number_to_words<T: std::convert::Into<f64>>(number: T, should_capitalise_
 }
 
 fn captitalise_first_letter(words: [&str; 10], index: usize) -> String {
-    let mut result = String::from("");
-    result += &words[index][0..1].to_uppercase();
-    result += &words[index][1..].to_string();
-    result
+    // concatenate capitalised first letter plus rest of word and return result
+    return words[index][0..1].to_uppercase() + &words[index][1..];
 }
 
 #[cfg(test)]
