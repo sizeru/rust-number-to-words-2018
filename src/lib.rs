@@ -11,11 +11,11 @@
 
 const MAX_DIGITS: usize = 49;
 
-const ONES: [&str; 10] = [
+static ONES: [&str; 10] = [
     "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
 ];
 
-const TEENS: [&str; 10] = [
+static TEENS: [&str; 10] = [
     "ten",
     "eleven",
     "twelve",
@@ -28,12 +28,12 @@ const TEENS: [&str; 10] = [
     "nineteen",
 ];
 
-const TENS: [&str; 10] = [
+static TENS: [&str; 10] = [
     "", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety",
 ];
 
 // US
-const THOUSANDS: [&str; 10] = [
+static THOUSANDS: [&str; 10] = [
     "",
     "thousand",
     "million",
@@ -48,9 +48,10 @@ const THOUSANDS: [&str; 10] = [
 
 const ASCII_ZERO_OFFSET: u8 = 48;
 
-pub fn number_to_words<T: std::convert::Into<f64>>(number: T) -> String {
+pub fn number_to_words<T: std::convert::Into<f64>>(number: T, should_capitalise_first_word: bool) -> String {
     let number: f64 = number.into();
     let mut all_zeros = true;
+    // let mut is_first_word = true;
     let mut should_skip_next_iteration = false;
     let mut result = String::from("");
     let mut temp: String;
@@ -85,7 +86,11 @@ pub fn number_to_words<T: std::convert::Into<f64>>(number: T) -> String {
                 let mut show_thousands = true;
                 if i == 0 {
                     // First digit in number (last in loop)
-                    temp = ONES[next_digit as usize].to_owned() + " ";
+                    if should_capitalise_first_word {
+                        temp = captitalise_first_letter(ONES, next_digit as usize) + " ";
+                    } else {
+                        temp = ONES[next_digit as usize].to_string() + " ";
+                    }
                 } else if digits_as_bytes[i - 1] == 1 {
                     // This digit is part of "teen" value
                     temp = TEENS[next_digit as usize].to_owned() + " ";
@@ -143,44 +148,52 @@ pub fn number_to_words<T: std::convert::Into<f64>>(number: T) -> String {
     result
 }
 
+fn captitalise_first_letter(words: [&str; 10], index: usize) -> String {
+    let mut result = String::from("");
+    result += &words[index][0..1].to_uppercase();
+    result += &words[index][1..].to_string();
+    result
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use rstest::*;
 
     #[rstest]
-    #[case(1.0, "one and 0/100")]
-    #[case(15.04, "fifteen and 4/100")]
-    #[case(99988389.123, "ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 12/100")]
-    #[case(12308120381241.876, "twelve trillion, three hundred eight billion, one hundred twenty million, three hundred eighty-one thousand, two hundred forty-two and 88/100")]
-    #[case(1266473890984381241., "one quintillion, two hundred sixty-six quadrillion, four hundred seventy-three trillion, eight hundred ninety billion, nine hundred eighty-four million, three hundred eighty-one thousand, two hundred and 0/100")]
+    #[case(1.0, "One and 0/100")]
+    #[case(15.04, "Fifteen and 4/100")]
+    #[case(99988389.123, "Ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 12/100")]
+    #[case(12308120381241.876, "Twelve trillion, three hundred eight billion, one hundred twenty million, three hundred eighty-one thousand, two hundred forty-two and 88/100")]
+    #[case(1266473890984381241., "One quintillion, two hundred sixty-six quadrillion, four hundred seventy-three trillion, eight hundred ninety billion, nine hundred eighty-four million, three hundred eighty-one thousand, two hundred and 0/100")]
     fn test_float_inputs(#[case] input: f64, #[case] expected: &str) {
-        assert_eq!(number_to_words(input), expected);
+        assert_eq!(number_to_words(input, true), expected);
     }
 
     #[rstest]
-    #[case(1, "one and 0/100")]
-    #[case(15, "fifteen and 0/100")]
-    #[case(1266, "one thousand, two hundred sixty-six and 0/100")]
+    #[case(1, "One and 0/100")]
+    #[case(15, "Fifteen and 0/100")]
+    #[case(1266, "One thousand, two hundred sixty-six and 0/100")]
     #[case(
         1230812,
-        "one million, two hundred thirty thousand, eight hundred twelve and 0/100"
+        "One million, two hundred thirty thousand, eight hundred twelve and 0/100"
     )]
-    #[case(99988389, "ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 0/100")]
+    #[case(99988389, "Ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 0/100")]
     fn test_signed_integer_inputs(#[case] input: i32, #[case] expected: &str) {
-        assert_eq!(number_to_words(input), expected);
+        assert_eq!(number_to_words(input, true), expected);
     }
 
     #[rstest]
-    #[case(1, "one and 0/100")]
-    #[case(15, "fifteen and 0/100")]
-    #[case(1266, "one thousand, two hundred sixty-six and 0/100")]
+
+    #[case(1, "One and 0/100")]
+    #[case(15, "Fifteen and 0/100")]
+    #[case(1266, "One thousand, two hundred sixty-six and 0/100")]
     #[case(
         1230812,
-        "one million, two hundred thirty thousand, eight hundred twelve and 0/100"
+        "One million, two hundred thirty thousand, eight hundred twelve and 0/100"
     )]
-    #[case(99988389, "ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 0/100")]
+    #[case(99988389, "Ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 0/100")]
     fn test_unsigned_integer_inputs(#[case] input: u32, #[case] expected: &str) {
-        assert_eq!(number_to_words(input), expected);
+        assert_eq!(number_to_words(input, true), expected);
     }
 }
