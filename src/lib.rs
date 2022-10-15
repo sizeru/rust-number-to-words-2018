@@ -87,7 +87,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(number: T, should_capitalise_
                 if i == 0 {
                     // First digit in number (last in loop)
                     if should_capitalise_first_word {
-                        temp = captitalise_first_letter(ONES, next_digit as usize) + " ";
+                        temp = capitalise_first_letter(ONES[next_digit as usize].to_string()) + " ";
                     } else {
                         temp = ONES[next_digit as usize].to_string() + " ";
                     }
@@ -148,9 +148,8 @@ pub fn number_to_words<T: std::convert::Into<f64>>(number: T, should_capitalise_
     result
 }
 
-fn captitalise_first_letter(words: [&str; 10], index: usize) -> String {
-    // concatenate capitalised first letter plus rest of word and return result
-    return words[index][0..1].to_uppercase() + &words[index][1..];
+fn capitalise_first_letter(mut word: String) -> String {
+    word.remove(0).to_uppercase().to_string() + &word
 }
 
 #[cfg(test)]
