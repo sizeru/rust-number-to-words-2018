@@ -208,4 +208,14 @@ mod tests {
     ) {
         assert_eq!(number_to_words(input, capitalise), expected);
     }
+
+    #[rstest]
+    #[case("one and", "One and")]
+    #[case("fifteen and 4/100", "Fifteen and 4/100")]
+    #[case("ninety", "Ninety")]
+    #[case("tWELVE", "TWELVE")]
+    fn test_capitalisation(#[case] input: String, #[case] expected: String) {
+        assert_eq!(capitalise_first_letter(input), expected);
+    }
+
 }
