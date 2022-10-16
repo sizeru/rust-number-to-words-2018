@@ -48,7 +48,10 @@ static THOUSANDS: [&str; 10] = [
 
 const ASCII_ZERO_OFFSET: u8 = 48;
 
-pub fn number_to_words<T: std::convert::Into<f64>>(number: T, should_capitalise_first_word: bool) -> String {
+pub fn number_to_words<T: std::convert::Into<f64>>(
+    number: T,
+    should_capitalise_first_word: bool,
+) -> String {
     let number: f64 = number.into();
     let mut all_zeros = true;
     // let mut is_first_word = true;
@@ -85,12 +88,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(number: T, should_capitalise_
                 // Ones
                 let mut show_thousands = true;
                 if i == 0 {
-                    // First digit in number (last in loop)
-                    if should_capitalise_first_word {
-                        temp = capitalise_first_letter(ONES[next_digit as usize].to_string()) + " ";
-                    } else {
-                        temp = ONES[next_digit as usize].to_string() + " ";
-                    }
+                    temp = ONES[next_digit as usize].to_string() + " ";
                 } else if digits_as_bytes[i - 1] == 1 {
                     // This digit is part of "teen" value
                     temp = TEENS[next_digit as usize].to_owned() + " ";
@@ -144,8 +142,10 @@ pub fn number_to_words<T: std::convert::Into<f64>>(number: T, should_capitalise_
     }
     // Append fractional portion/cents
     let cents = number - num::Float::floor(number);
+    if should_capitalise_first_word {
+        result = capitalise_first_letter(result);
+    }
     result = result + "and " + &format!("{:}/100", num::Float::round(cents * 100.0));
-    println!("{}", result);
     result
 }
 
@@ -181,12 +181,15 @@ mod tests {
         false,
         "ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 0/100"
     )]
-    fn test_signed_integer_inputs(#[case] input: i32, #[case]capitalise: bool, #[case] expected: &str) {
+    fn test_signed_integer_inputs(
+        #[case] input: i32,
+        #[case] capitalise: bool,
+        #[case] expected: &str,
+    ) {
         assert_eq!(number_to_words(input, capitalise), expected);
     }
 
     #[rstest]
-
     #[case(1, true, "One and 0/100")]
     #[case(15, true, "Fifteen and 0/100")]
     #[case(1266, true, "One thousand, two hundred sixty-six and 0/100")]
@@ -195,10 +198,14 @@ mod tests {
         true,
         "One million, two hundred thirty thousand, eight hundred twelve and 0/100"
     )]
-    #[case(99988389, 
+    #[case(99988389,
         true,
         "Ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 0/100")]
-    fn test_unsigned_integer_inputs(#[case] input: u32, #[case] capitalise: bool, #[case] expected: &str) {
+    fn test_unsigned_integer_inputs(
+        #[case] input: u32,
+        #[case] capitalise: bool,
+        #[case] expected: &str,
+    ) {
         assert_eq!(number_to_words(input, capitalise), expected);
     }
 }
