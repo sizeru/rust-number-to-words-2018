@@ -145,6 +145,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(number: T, should_capitalise_
     // Append fractional portion/cents
     let cents = number - num::Float::floor(number);
     result = result + "and " + &format!("{:}/100", num::Float::round(cents * 100.0));
+    println!("{}", result);
     result
 }
 
@@ -158,39 +159,46 @@ mod tests {
     use rstest::*;
 
     #[rstest]
-    #[case(1.0, "One and 0/100")]
-    #[case(15.04, "Fifteen and 4/100")]
-    #[case(99988389.123, "Ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 12/100")]
-    #[case(12308120381241.876, "Twelve trillion, three hundred eight billion, one hundred twenty million, three hundred eighty-one thousand, two hundred forty-two and 88/100")]
-    #[case(1266473890984381241., "One quintillion, two hundred sixty-six quadrillion, four hundred seventy-three trillion, eight hundred ninety billion, nine hundred eighty-four million, three hundred eighty-one thousand, two hundred and 0/100")]
-    fn test_float_inputs(#[case] input: f64, #[case] expected: &str) {
-        assert_eq!(number_to_words(input, true), expected);
+    #[case(1.0, true, "One and 0/100")]
+    #[case(15.04, true, "Fifteen and 4/100")]
+    #[case(99988389.123, true, "Ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 12/100")]
+    #[case(12308120381241.876, true, "Twelve trillion, three hundred eight billion, one hundred twenty million, three hundred eighty-one thousand, two hundred forty-two and 88/100")]
+    #[case(1266473890984381241., true, "One quintillion, two hundred sixty-six quadrillion, four hundred seventy-three trillion, eight hundred ninety billion, nine hundred eighty-four million, three hundred eighty-one thousand, two hundred and 0/100")]
+    fn test_float_inputs(#[case] input: f64, #[case] capitalise: bool, #[case] expected: &str) {
+        assert_eq!(number_to_words(input, capitalise), expected);
     }
 
     #[rstest]
-    #[case(1, "One and 0/100")]
-    #[case(15, "Fifteen and 0/100")]
-    #[case(1266, "One thousand, two hundred sixty-six and 0/100")]
+    #[case(1, false, "one and 0/100")]
+    #[case(15, false, "fifteen and 0/100")]
+    #[case(1266, false, "one thousand, two hundred sixty-six and 0/100")]
     #[case(
         1230812,
-        "One million, two hundred thirty thousand, eight hundred twelve and 0/100"
+        false,
+        "one million, two hundred thirty thousand, eight hundred twelve and 0/100"
     )]
-    #[case(99988389, "Ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 0/100")]
-    fn test_signed_integer_inputs(#[case] input: i32, #[case] expected: &str) {
-        assert_eq!(number_to_words(input, true), expected);
+    #[case(99988389,
+        false,
+        "ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 0/100"
+    )]
+    fn test_signed_integer_inputs(#[case] input: i32, #[case]capitalise: bool, #[case] expected: &str) {
+        assert_eq!(number_to_words(input, capitalise), expected);
     }
 
     #[rstest]
 
-    #[case(1, "One and 0/100")]
-    #[case(15, "Fifteen and 0/100")]
-    #[case(1266, "One thousand, two hundred sixty-six and 0/100")]
+    #[case(1, true, "One and 0/100")]
+    #[case(15, true, "Fifteen and 0/100")]
+    #[case(1266, true, "One thousand, two hundred sixty-six and 0/100")]
     #[case(
         1230812,
+        true,
         "One million, two hundred thirty thousand, eight hundred twelve and 0/100"
     )]
-    #[case(99988389, "Ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 0/100")]
-    fn test_unsigned_integer_inputs(#[case] input: u32, #[case] expected: &str) {
-        assert_eq!(number_to_words(input, true), expected);
+    #[case(99988389, 
+        true,
+        "Ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 0/100")]
+    fn test_unsigned_integer_inputs(#[case] input: u32, #[case] capitalise: bool, #[case] expected: &str) {
+        assert_eq!(number_to_words(input, capitalise), expected);
     }
 }

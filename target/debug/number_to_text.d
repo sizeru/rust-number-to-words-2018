@@ -1,1 +1,0 @@
-/media/nexpro/data/code/rust_sandbox/rust-number-to-words/target/debug/number_to_text: /media/nexpro/data/code/rust_sandbox/rust-number-to-words/src/lib.rs /media/nexpro/data/code/rust_sandbox/rust-number-to-words/src/main.rs
