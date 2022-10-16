@@ -213,7 +213,9 @@ mod tests {
     #[case("one and", "One and")]
     #[case("fifteen and 4/100", "Fifteen and 4/100")]
     #[case("ninety", "Ninety")]
+    #[case("12345", "12345")]
     #[case("tWELVE", "TWELVE")]
+    #[case("$banana", "$banana")]
     fn test_capitalisation(#[case] input: String, #[case] expected: String) {
         assert_eq!(capitalise_first_letter(input), expected);
     }
