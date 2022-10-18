@@ -9,7 +9,7 @@
    Licensed under the MIT license.
 */
 
-const MAX_DIGITS: usize = 49;
+// const MAX_DIGITS: usize = 49;
 
 static ONES: [&str; 10] = [
     "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
@@ -52,24 +52,25 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
     number: T,
     should_capitalise_first_word: bool,
 ) -> String {
-    let number: f64 = number.into();
+    // let mut number: f64 = number.into();
+    // Convert to f64 and ensure number is positive value
+    let number = num::abs(number.into());
     let mut all_zeros = true;
     // let mut is_first_word = true;
     let mut should_skip_next_iteration = false;
     let mut result = String::from("");
     let mut temp: String;
-    // Ensure number is positive value
-    let number = num::abs(number);
+    
+    
 
     // Convert integer portion of value to string
     let rounded = num::Float::round(number);
 
     // Convert integer portion of value to string
     let mut digits_as_bytes = rounded.to_string().into_bytes();
-    if digits_as_bytes.len() > MAX_DIGITS {
-        return "* * * * * * * NUMBER TOO LARGE * * * * * * *".to_owned();
-    }
-    // Modify digits so we can simply compare ints
+    
+
+    // Convert digits to bytes so we can simply compare ints
     for _digit in digits_as_bytes.iter_mut() {
         *_digit -= ASCII_ZERO_OFFSET;
     }
@@ -152,7 +153,6 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
 fn capitalise_first_letter(mut word: String) -> String {
     word.remove(0).to_uppercase().to_string() + &word
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -208,7 +208,8 @@ mod tests {
     ) {
         assert_eq!(number_to_words(input, capitalise), expected);
     }
-
+    
+    // Tests for capitalise_first_word()
     #[rstest]
     #[case("one and", "One and")]
     #[case("fifteen and 4/100", "Fifteen and 4/100")]
