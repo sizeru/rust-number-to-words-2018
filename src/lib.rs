@@ -33,7 +33,7 @@ static TENS: [&str; 10] = [
 ];
 
 // US
-static THOUSANDS: [&str; 10] = [
+static THOUSANDS: [&str; 22] = [
     "",
     "thousand",
     "million",
@@ -44,6 +44,18 @@ static THOUSANDS: [&str; 10] = [
     "sextillion",
     "septillion",
     "octillion",
+    "nonillion",
+    "deccillion",
+    "undecillion",
+    "duodecillion",
+    "tredecillion",
+    "quatuordecillion",
+    "quindecillion",
+    "sexdecillion",
+    "septendecillion",
+    "octodecillion",
+    "novemdecillion",
+    "vigintillion",
 ];
 
 const ASCII_ZERO_OFFSET: u8 = 48;
@@ -60,15 +72,12 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
     let mut should_skip_next_iteration = false;
     let mut result = String::from("");
     let mut temp: String;
-    
-    
 
-    // Convert integer portion of value to string
+    // Convert integer portion of value to stringcd ..
     let rounded = num::Float::round(number);
 
     // Convert integer portion of value to string
     let mut digits_as_bytes = rounded.to_string().into_bytes();
-    
 
     // Convert digits to bytes so we can simply compare ints
     for _digit in digits_as_bytes.iter_mut() {
@@ -150,6 +159,10 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
     result
 }
 
+fn format_number(num: f64) -> String {
+    format!("{:.2}", f64::round(num * 100.0) / 100.0)
+}
+
 fn capitalise_first_letter(mut word: String) -> String {
     word.remove(0).to_uppercase().to_string() + &word
 }
@@ -157,13 +170,57 @@ fn capitalise_first_letter(mut word: String) -> String {
 mod tests {
     use super::*;
     use rstest::*;
+    // Tests for format_number()
+    #[rstest]
+    #[case(123.456, "123.46")] // Case1
+    #[case(123.4567, "123.46")]
+    #[case(123.4, "123.40")] // Case 3
+    #[case(123.056, "123.06")]
+    #[case(123.006, "123.01")] // Case 5
+    #[case(123.005, "123.01")]
+    #[case(123.004, "123.00")] // Case 7
+    #[case(123.9999, "124.00")]
+    #[case(9_999_999_999_999.99999, "10000000000000.00")]
+    fn test_format_number(#[case] input: f64, #[case] expected: &str) {
+        assert_eq!(format_number(input), expected);
+    }
 
     #[rstest]
-    #[case(1.0, true, "One and 0/100")]
-    #[case(15.04, true, "Fifteen and 4/100")]
-    #[case(99988389.123, true, "Ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 12/100")]
-    #[case(12308120381241.876, true, "Twelve trillion, three hundred eight billion, one hundred twenty million, three hundred eighty-one thousand, two hundred forty-two and 88/100")]
-    #[case(1266473890984381241., true, "One quintillion, two hundred sixty-six quadrillion, four hundred seventy-three trillion, eight hundred ninety billion, nine hundred eighty-four million, three hundred eighty-one thousand, two hundred and 0/100")]
+    #[case(0.099, true, "Zero and 10/100")] // Case1
+    #[case(1.0, true, "One and 0/100")] // Case 2
+    #[case(15.04, true, "Fifteen and 4/100")] // Case 3
+    #[case(99988389.123, true, // Case 4
+        "Ninety-nine million, \
+         nine hundred eighty-eight thousand, \
+         three hundred eighty-nine and 12/100"
+        )]
+    #[case(12308120381241.876, true,  // Case 5
+        "Twelve trillion, \
+        three hundred eight billion, \
+        one hundred twenty million, \
+        three hundred eighty-one thousand, \
+        two hundred forty-two and 88/100"
+    )]
+    #[case(1266473890984381241., true, // Case 6
+        "One quintillion, \
+        two hundred sixty-six quadrillion, \
+        four hundred seventy-three trillion, \
+        eight hundred ninety billion, \
+        nine hundred eighty-four million, \
+        three hundred eighty-one thousand, \
+        two hundred and 0/100"
+    )]
+    #[case(9_999_999_999_999.0100, // Case 7
+        true,
+        "Nine trillion, \
+        nine hundred ninety-nine billion, \
+        nine hundred ninety-nine million, \
+        nine hundred ninety-nine thousand, \
+        nine hundred ninety-nine and 1/100"
+    )]
+    #[case(9_999_999_999_999.9999, true, "Ten trillion and 0/100")] // Case 8
+    #[case(9_999_999_999_999.09999, true, "Ten trillion and 10/100")] // Case 9
+    #[case(9_999_999_999_999.989, true, "Ten trillion and 99/100")] // Case 10
     fn test_float_inputs(#[case] input: f64, #[case] capitalise: bool, #[case] expected: &str) {
         assert_eq!(number_to_words(input, capitalise), expected);
     }
@@ -191,16 +248,25 @@ mod tests {
 
     #[rstest]
     #[case(1, true, "One and 0/100")]
-    #[case(15, true, "Fifteen and 0/100")]
-    #[case(1266, true, "One thousand, two hundred sixty-six and 0/100")]
+    #[case(15, true, "Fifteen and 0/100"
+    )]
+    #[case(1266, true, 
+        "One thousand, \
+        two hundred sixty-six and 0/100"
+    )]
     #[case(
         1230812,
         true,
-        "One million, two hundred thirty thousand, eight hundred twelve and 0/100"
+        "One million, \
+        two hundred thirty thousand, \
+        eight hundred twelve and 0/100"
     )]
     #[case(99988389,
         true,
-        "Ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 0/100")]
+        "Ninety-nine million, \
+        nine hundred eighty-eight thousand, \
+        three hundred eighty-nine and 0/100"
+    )]
     fn test_unsigned_integer_inputs(
         #[case] input: u32,
         #[case] capitalise: bool,
@@ -208,7 +274,7 @@ mod tests {
     ) {
         assert_eq!(number_to_words(input, capitalise), expected);
     }
-    
+
     // Tests for capitalise_first_word()
     #[rstest]
     #[case("one and", "One and")]
@@ -220,5 +286,6 @@ mod tests {
     fn test_capitalisation(#[case] input: String, #[case] expected: String) {
         assert_eq!(capitalise_first_letter(input), expected);
     }
-
 }
+    
+
