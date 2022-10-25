@@ -1,5 +1,5 @@
 /*
-   Rust implementation program to convert u64 number to a string of words
+   Rust implementation program to convert f64 number to a string of words
 
    Copyright (c) NexPro 2022
 
@@ -8,8 +8,6 @@
 
    Licensed under the MIT license.
 */
-
-// const MAX_DIGITS: usize = 49;
 
 static ONES: [&str; 10] = [
     "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
@@ -67,6 +65,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
     // let mut number: f64 = number.into();
     // Convert to f64 and ensure number is positive value
     let number = num::abs(number.into());
+    let formatted_num:String = round_and_format_number(num);
     let mut all_zeros = true;
     // let mut is_first_word = true;
     let mut should_skip_next_iteration = false;
@@ -159,7 +158,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
     result
 }
 
-fn format_number(num: f64) -> String {
+fn round_and_format_number(num: f64) -> String {
     format!("{:.2}", f64::round(num * 100.0) / 100.0)
 }
 
@@ -170,7 +169,7 @@ fn capitalise_first_letter(mut word: String) -> String {
 mod tests {
     use super::*;
     use rstest::*;
-    // Tests for format_number()
+    // Tests for round_and_format_number()
     #[rstest]
     #[case(123.456, "123.46")] // Case1
     #[case(123.4567, "123.46")]
@@ -181,8 +180,8 @@ mod tests {
     #[case(123.004, "123.00")] // Case 7
     #[case(123.9999, "124.00")]
     #[case(9_999_999_999_999.99999, "10000000000000.00")]
-    fn test_format_number(#[case] input: f64, #[case] expected: &str) {
-        assert_eq!(format_number(input), expected);
+    fn test_round_and_format_number(#[case] input: f64, #[case] expected: &str) {
+        assert_eq!(round_and_format_number(input), expected);
     }
 
     #[rstest]
