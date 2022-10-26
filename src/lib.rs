@@ -184,6 +184,7 @@ fn capitalise_first_letter(mut word: String) -> String {
 mod tests {
     use super::*;
     use rstest::*;
+
     // Tests for round_and_format_number()
     #[rstest]
     #[case(123.456, "123.46")] // Case1
@@ -294,6 +295,21 @@ mod tests {
         assert_eq!(number_to_words(input, capitalise), expected);
     }
 
+    // Tests for split_on_decimal_point()
+    #[rstest]
+    #[case("0.0", ["0", "0"])]
+    #[case("0.00", ["0", "00"])]
+    #[case("1.0", ["1", "0"])]
+    #[case("1.1", ["1", "1"])]
+    #[case("99.999", ["99", "999"])]
+    #[case("000.0", ["000", "0"])]
+    #[case("9999999999.99", ["9999999999", "99"])]
+    #[case("1.", ["1", ""])]
+    #[case(".", ["", ""])]
+    fn splitting_test(#[case] input: String, #[case] expected: [&str; 2]) {
+        assert_eq!(split_on_decimal_point(input), expected);
+    }
+
     // Tests for capitalise_first_word()
     #[rstest]
     #[case("one and", "One and")]
@@ -307,4 +323,3 @@ mod tests {
     }
 }
     
-
