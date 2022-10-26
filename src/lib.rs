@@ -178,6 +178,9 @@ fn split_on_decimal_point(number: String) -> [String; 2] {
 }
 
 fn capitalise_first_letter(mut word: String) -> String {
+    if word == "" {
+        return "".to_owned();
+    }
     word.remove(0).to_uppercase().to_string() + &word
 }
 #[cfg(test)]
@@ -301,11 +304,12 @@ mod tests {
     #[case("0.00", ["0", "00"])]
     #[case("1.0", ["1", "0"])]
     #[case("1.1", ["1", "1"])]
-    #[case("99.999", ["99", "999"])]
+    #[case("99.999", ["99", "999"])] // Case 5
     #[case("000.0", ["000", "0"])]
     #[case("9999999999.99", ["9999999999", "99"])]
     #[case("1.", ["1", ""])]
     #[case(".", ["", ""])]
+    #[case("", ["", ""])] // Case 10
     fn splitting_test(#[case] input: String, #[case] expected: [&str; 2]) {
         assert_eq!(split_on_decimal_point(input), expected);
     }
@@ -318,6 +322,8 @@ mod tests {
     #[case("12345", "12345")]
     #[case("tWELVE", "TWELVE")]
     #[case("$banana", "$banana")]
+    #[case("", "")]
+
     fn test_capitalisation(#[case] input: String, #[case] expected: String) {
         assert_eq!(capitalise_first_letter(input), expected);
     }
