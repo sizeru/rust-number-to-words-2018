@@ -29,7 +29,6 @@ static TEENS: [&str; 10] = [
 static TENS: [&str; 10] = [
     "", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety",
 ];
-
 // US
 static THOUSANDS: [&str; 22] = [
     "",
@@ -57,39 +56,42 @@ static THOUSANDS: [&str; 22] = [
 ];
 
 const ASCII_ZERO_OFFSET: u8 = 48;
+const LARGEST_ALLOWABLE_INPUT_VALUE:f64 = 9_999_999_999_999.99;
 
 pub fn number_to_words<T: std::convert::Into<f64>>(
     number: T,
     should_capitalise_first_word: bool,
 ) -> String {
-    // let mut number: f64 = number.into();
+
     // Convert to f64 and ensure number is positive value
     let number = num::abs(number.into());
-    let formatted_num:String = round_and_format_number(num);
+    if  number > LARGEST_ALLOWABLE_INPUT_VALUE {
+        return "Number too large".to_owned();
+    }
+    let formatted_num:String = round_and_format_number(number);
+    let split_number = split_on_decimal_point(formatted_num);
+    let mantissa = split_number[0].clone();
+    let mut cents = split_number[1].clone();
     let mut all_zeros = true;
-    // let mut is_first_word = true;
     let mut should_skip_next_iteration = false;
     let mut result = String::from("");
     let mut temp: String;
 
-    // Convert integer portion of value to stringcd ..
-    let rounded = num::Float::round(number);
-
     // Convert integer portion of value to string
-    let mut digits_as_bytes = rounded.to_string().into_bytes();
+    let mut mantissa_as_bytes = mantissa.clone().into_bytes();
 
     // Convert digits to bytes so we can simply compare ints
-    for _digit in digits_as_bytes.iter_mut() {
+    for _digit in mantissa_as_bytes.iter_mut() {
         *_digit -= ASCII_ZERO_OFFSET;
     }
     // Reverse iterate over digits in order to build our output string
-    for i in (0..digits_as_bytes.len()).rev() {
+    for i in (0..mantissa_as_bytes.len()).rev() {
         if should_skip_next_iteration {
             should_skip_next_iteration = false;
             continue;
         }
-        let next_digit = digits_as_bytes[i];
-        let column = digits_as_bytes.len() - (i + 1);
+        let next_digit = mantissa_as_bytes[i];
+        let column = mantissa_as_bytes.len() - (i + 1);
 
         // Determine if digit is in the ones, tens or hundreds column
         match column % 3 {
@@ -98,7 +100,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
                 let mut show_thousands = true;
                 if i == 0 {
                     temp = ONES[next_digit as usize].to_string() + " ";
-                } else if digits_as_bytes[i - 1] == 1 {
+                } else if mantissa_as_bytes[i - 1] == 1 {
                     // This digit is part of "teen" value
                     temp = TEENS[next_digit as usize].to_owned() + " ";
                     // Skip tens position
@@ -111,7 +113,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
                     // column are also zero, don't show "thousands"
                     temp = "".to_owned();
                     show_thousands =
-                        digits_as_bytes[i - 1] != 0 || (i > 1 && digits_as_bytes[i - 2] != 0);
+                        mantissa_as_bytes[i - 1] != 0 || (i > 1 && mantissa_as_bytes[i - 2] != 0);
                 }
                 // Show "thousands" if non-zero in grouping
                 if show_thousands {
@@ -129,7 +131,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
                 // Tens
                 if next_digit > 0 {
                     temp = TENS[next_digit as usize].to_owned()
-                        + (if digits_as_bytes[i + 1] != 0 {
+                        + (if mantissa_as_bytes[i + 1] != 0 {
                             "-"
                         } else {
                             " "
@@ -149,17 +151,30 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
             }
         }
     }
-    // Append fractional portion/cents
-    let cents = number - num::Float::floor(number);
+    
     if should_capitalise_first_word {
         result = capitalise_first_letter(result);
     }
-    result = result + "and " + &format!("{:}/100", num::Float::round(cents * 100.0));
-    result
+    // Remove leading zero from cents if present
+    if cents.chars().next().unwrap() == '0' {
+        cents.remove(0);
+    }
+    // Append cents
+    result + "and " + &cents + "/100"
 }
 
 fn round_and_format_number(num: f64) -> String {
     format!("{:.2}", f64::round(num * 100.0) / 100.0)
+}
+
+fn split_on_decimal_point(number: String) -> [String; 2] {
+    let mut v: [String; 2] = [String::new(), String::new()];
+    number
+        .split('.')
+        .into_iter()
+        .enumerate()
+        .for_each(|(idx, n)| v[idx] = n.to_owned());
+    v
 }
 
 fn capitalise_first_letter(mut word: String) -> String {
@@ -193,21 +208,19 @@ mod tests {
          nine hundred eighty-eight thousand, \
          three hundred eighty-nine and 12/100"
         )]
-    #[case(12308120381241.876, true,  // Case 5
-        "Twelve trillion, \
+    #[case(9308120381241.876, true,  // Case 5
+        "Nine trillion, \
         three hundred eight billion, \
         one hundred twenty million, \
         three hundred eighty-one thousand, \
-        two hundred forty-two and 88/100"
+        two hundred forty-one and 88/100"
     )]
-    #[case(1266473890984381241., true, // Case 6
-        "One quintillion, \
-        two hundred sixty-six quadrillion, \
-        four hundred seventy-three trillion, \
+    #[case(9890984381241.55, true, // Case 6
+        "Nine trillion, \
         eight hundred ninety billion, \
         nine hundred eighty-four million, \
         three hundred eighty-one thousand, \
-        two hundred and 0/100"
+        two hundred forty-one and 55/100"
     )]
     #[case(9_999_999_999_999.0100, // Case 7
         true,
@@ -217,9 +230,16 @@ mod tests {
         nine hundred ninety-nine thousand, \
         nine hundred ninety-nine and 1/100"
     )]
-    #[case(9_999_999_999_999.9999, true, "Ten trillion and 0/100")] // Case 8
-    #[case(9_999_999_999_999.09999, true, "Ten trillion and 10/100")] // Case 9
-    #[case(9_999_999_999_999.989, true, "Ten trillion and 99/100")] // Case 10
+    #[case(999_999_999_999.9999, true, "One trillion and 0/100")] // Case 8
+    #[case(9_999_999_999_999.09999, true, "Nine trillion, nine hundred ninety-nine billion, nine hundred ninety-nine million, nine hundred ninety-nine thousand, nine hundred ninety-nine and 10/100")] // Case 9
+    #[case(9_999_999_999_999.989, true, "Nine trillion, nine hundred ninety-nine billion, nine hundred ninety-nine million, nine hundred ninety-nine thousand, nine hundred ninety-nine and 99/100")] // Case 10
+    #[case(9_999_999_999_999.99, true, // Case 11
+        "Nine trillion, \
+        nine hundred ninety-nine billion, \
+        nine hundred ninety-nine million, \
+        nine hundred ninety-nine thousand, \
+        nine hundred ninety-nine and 99/100"
+    )]
     fn test_float_inputs(#[case] input: f64, #[case] capitalise: bool, #[case] expected: &str) {
         assert_eq!(number_to_words(input, capitalise), expected);
     }
