@@ -30,29 +30,12 @@ static TENS: [&str; 10] = [
     "", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety",
 ];
 // US
-static THOUSANDS: [&str; 22] = [
+static THOUSANDS: [&str; 5] = [
     "",
     "thousand",
     "million",
     "billion",
-    "trillion",
-    "quadrillion",
-    "quintillion",
-    "sextillion",
-    "septillion",
-    "octillion",
-    "nonillion",
-    "deccillion",
-    "undecillion",
-    "duodecillion",
-    "tredecillion",
-    "quatuordecillion",
-    "quindecillion",
-    "sexdecillion",
-    "septendecillion",
-    "octodecillion",
-    "novemdecillion",
-    "vigintillion",
+    "trillion"
 ];
 
 const ASCII_ZERO_OFFSET: u8 = 48;
