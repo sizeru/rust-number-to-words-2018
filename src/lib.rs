@@ -117,13 +117,11 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
                 // Default case. Do nothing?
             }
         }
-        fn handle_tens(next: usize, idx: usize, mantissa:Vec<u8>) -> String {
+        fn handle_tens(next: usize, idx: usize, mantissa: Vec<u8>) -> String {
             if next > 0 {
-            return TENS[next].to_owned()
-                + (if mantissa[idx + 1] != 0 { "-" } else { " " })
-            } else {
-                return String::new();
+                return TENS[next].to_owned() + (if mantissa[idx + 1] != 0 { "-" } else { " " });
             }
+            String::new()
         }
     }
 
