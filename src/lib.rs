@@ -30,34 +30,27 @@ static TENS: [&str; 10] = [
     "", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety",
 ];
 // US
-static THOUSANDS: [&str; 5] = [
-    "",
-    "thousand",
-    "million",
-    "billion",
-    "trillion"
-];
+static THOUSANDS: [&str; 5] = ["", "thousand", "million", "billion", "trillion"];
 
 const ASCII_ZERO_OFFSET: u8 = 48;
-const LARGEST_ALLOWABLE_INPUT_VALUE:f64 = 9_999_999_999_999.99;
+const LARGEST_ALLOWABLE_INPUT_VALUE: f64 = 9_999_999_999_999.99;
 
 pub fn number_to_words<T: std::convert::Into<f64>>(
     number: T,
     should_capitalise_first_word: bool,
 ) -> String {
-
     // Convert to f64 and ensure number is positive value
     let number = num::abs(number.into());
-    if  number > LARGEST_ALLOWABLE_INPUT_VALUE {
+    if number > LARGEST_ALLOWABLE_INPUT_VALUE {
         return "Number too large".to_owned();
     }
-    let formatted_num:String = round_and_format_number(number);
+    let formatted_num: String = round_and_format_number(number);
     let split_number = split_on_decimal_point(formatted_num);
     let mantissa = split_number[0].clone();
     let mut cents = split_number[1].clone();
     let mut all_zeros = true;
     let mut should_skip_next_iteration = false;
-    let mut result = String::new();
+    let mut result: String = String::new();
     let mut temp: String;
 
     // Convert integer portion of value to string
@@ -95,8 +88,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
                     // This digit is zero. If digits in tens and hundreds
                     // column are also zero, don't show "thousands"
                     temp = String::new();
-                    show_thousands =
-                        mantissa[i - 1] != 0 || (i > 1 && mantissa[i - 2] != 0);
+                    show_thousands = mantissa[i - 1] != 0 || (i > 1 && mantissa[i - 2] != 0);
                 }
                 // Show "thousands" if non-zero in grouping
                 if show_thousands {
@@ -112,15 +104,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
             }
             1 => {
                 // Tens
-                if next_digit > 0 {
-                    temp = TENS[next_digit as usize].to_owned()
-                        + (if mantissa[i + 1] != 0 {
-                            "-"
-                        } else {
-                            " "
-                        });
-                    result = temp + &result;
-                }
+                result = handle_tens(next_digit.into(), i, mantissa.clone()) + &result;
             }
             2 => {
                 // Hundreds
@@ -133,8 +117,12 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
                 // Default case. Do nothing?
             }
         }
+        fn handle_tens(next: usize, idx: usize, mantissa:Vec<u8>) -> String {
+            TENS[next].to_owned()
+                + (if mantissa[idx + 1] != 0 { "-" } else { " " })
+        }
     }
-    
+
     if should_capitalise_first_word {
         result = capitalise_first_letter(result);
     }
@@ -254,9 +242,10 @@ mod tests {
 
     #[rstest]
     #[case(1, true, "One and 0/100")]
-    #[case(15, true, "Fifteen and 0/100"
-    )]
-    #[case(1266, true, 
+    #[case(15, true, "Fifteen and 0/100")]
+    #[case(
+        1266,
+        true,
         "One thousand, \
         two hundred sixty-six and 0/100"
     )]
@@ -267,7 +256,8 @@ mod tests {
         two hundred thirty thousand, \
         eight hundred twelve and 0/100"
     )]
-    #[case(99988389,
+    #[case(
+        99988389,
         true,
         "Ninety-nine million, \
         nine hundred eighty-eight thousand, \
@@ -311,4 +301,3 @@ mod tests {
         assert_eq!(capitalise_first_letter(input), expected);
     }
 }
-    
