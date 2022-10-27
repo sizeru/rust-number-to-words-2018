@@ -117,6 +117,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
                 // Default case. Do nothing?
             }
         }
+
     }
 
     if should_capitalise_first_word {
