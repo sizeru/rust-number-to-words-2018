@@ -118,8 +118,12 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
             }
         }
         fn handle_tens(next: usize, idx: usize, mantissa:Vec<u8>) -> String {
-            TENS[next].to_owned()
+            if next > 0 {
+            return TENS[next].to_owned()
                 + (if mantissa[idx + 1] != 0 { "-" } else { " " })
+            } else {
+                return String::new();
+            }
         }
     }
 
