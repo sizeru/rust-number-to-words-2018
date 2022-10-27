@@ -61,20 +61,20 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
     let mut temp: String;
 
     // Convert integer portion of value to string
-    let mut mantissa_as_bytes = mantissa.into_bytes();
+    let mut mantissa = mantissa.into_bytes();
 
     // Convert digits to bytes so we can simply compare ints
-    for _digit in mantissa_as_bytes.iter_mut() {
+    for _digit in mantissa.iter_mut() {
         *_digit -= ASCII_ZERO_OFFSET;
     }
     // Reverse iterate over digits in order to build our output string
-    for i in (0..mantissa_as_bytes.len()).rev() {
+    for i in (0..mantissa.len()).rev() {
         if should_skip_next_iteration {
             should_skip_next_iteration = false;
             continue;
         }
-        let next_digit = mantissa_as_bytes[i];
-        let column = mantissa_as_bytes.len() - (i + 1);
+        let next_digit = mantissa[i];
+        let column = mantissa.len() - (i + 1);
 
         // Determine if digit is in the ones, tens or hundreds column
         match column % 3 {
@@ -83,7 +83,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
                 let mut show_thousands = true;
                 if i == 0 {
                     temp = ONES[next_digit as usize].to_string() + " ";
-                } else if mantissa_as_bytes[i - 1] == 1 {
+                } else if mantissa[i - 1] == 1 {
                     // This digit is part of "teen" value
                     temp = TEENS[next_digit as usize].to_owned() + " ";
                     // Skip tens position
@@ -96,7 +96,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
                     // column are also zero, don't show "thousands"
                     temp = "".to_owned();
                     show_thousands =
-                        mantissa_as_bytes[i - 1] != 0 || (i > 1 && mantissa_as_bytes[i - 2] != 0);
+                        mantissa[i - 1] != 0 || (i > 1 && mantissa[i - 2] != 0);
                 }
                 // Show "thousands" if non-zero in grouping
                 if show_thousands {
@@ -114,7 +114,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
                 // Tens
                 if next_digit > 0 {
                     temp = TENS[next_digit as usize].to_owned()
-                        + (if mantissa_as_bytes[i + 1] != 0 {
+                        + (if mantissa[i + 1] != 0 {
                             "-"
                         } else {
                             " "
