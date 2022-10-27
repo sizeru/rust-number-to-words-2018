@@ -57,7 +57,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
     let mut cents = split_number[1].clone();
     let mut all_zeros = true;
     let mut should_skip_next_iteration = false;
-    let mut result = String::from("");
+    let mut result = String::new();
     let mut temp: String;
 
     // Convert integer portion of value to string
