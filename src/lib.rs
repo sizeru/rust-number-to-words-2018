@@ -117,12 +117,6 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
                 // Default case. Do nothing?
             }
         }
-        fn handle_tens(next: usize, idx: usize, mantissa: Vec<u8>) -> String {
-            if next > 0 {
-                return TENS[next].to_owned() + (if mantissa[idx + 1] != 0 { "-" } else { " " });
-            }
-            String::new()
-        }
     }
 
     if should_capitalise_first_word {
@@ -138,6 +132,13 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
 
 fn round_and_format_number(num: f64) -> String {
     format!("{:.2}", f64::round(num * 100.0) / 100.0)
+}
+
+fn handle_tens(next: usize, idx: usize, mantissa: Vec<u8>) -> String {
+    if next > 0 {
+        return TENS[next].to_owned() + (if mantissa[idx + 1] != 0 { "-" } else { " " });
+    }
+    String::new()
 }
 
 fn split_on_decimal_point(number: String) -> [String; 2] {
