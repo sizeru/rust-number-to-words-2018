@@ -94,7 +94,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
                 } else {
                     // This digit is zero. If digits in tens and hundreds
                     // column are also zero, don't show "thousands"
-                    temp = "".to_owned();
+                    temp = String::new();
                     show_thousands =
                         mantissa[i - 1] != 0 || (i > 1 && mantissa[i - 2] != 0);
                 }
