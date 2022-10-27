@@ -61,7 +61,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
     let mut temp: String;
 
     // Convert integer portion of value to string
-    let mut mantissa_as_bytes = mantissa.clone().into_bytes();
+    let mut mantissa_as_bytes = mantissa.into_bytes();
 
     // Convert digits to bytes so we can simply compare ints
     for _digit in mantissa_as_bytes.iter_mut() {
@@ -139,7 +139,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
         result = capitalise_first_letter(result);
     }
     // Remove leading zero from cents if present
-    if cents.chars().next().unwrap() == '0' {
+    if cents.starts_with('0') {
         cents.remove(0);
     }
     // Append cents
@@ -161,7 +161,7 @@ fn split_on_decimal_point(number: String) -> [String; 2] {
 }
 
 fn capitalise_first_letter(mut word: String) -> String {
-    if word == "" {
+    if word.is_empty() {
         return "".to_owned();
     }
     word.remove(0).to_uppercase().to_string() + &word
