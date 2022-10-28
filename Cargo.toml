@@ -1,6 +1,13 @@
 [package]
 edition = "2021"
+license = "MIT"
 name = "number_to_words"
+authors = ["Nex-Pro", "NexPro", "bwintertkb"]
+homepage = "https://github.com/Nex-Pro/rust-number-to-words"
+description = "Converts number to words"
+repository = "https://github.com/Nex-Pro/rust-number-to-words"
+keywords = ["utility", "number", "finance", "banking"]
+categories = ["command-line-utilities", "development-tools::cargo-plugins"]
 
 version = "0.1.0"
 
