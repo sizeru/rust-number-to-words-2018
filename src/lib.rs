@@ -357,15 +357,6 @@ mod tests {
         assert_eq!(split_on_decimal_point(input), expected);
     }
 
-    #[rstest]
-
-    fn number_as_string_test(
-        #[case] input: &str,
-        #[case] capitalise: bool,
-        #[case] expected: String,
-    ) {
-        assert_eq!(number_to_words(input, capitalise), expected);
-    }
     // Tests for capitalise_first_word()
     #[rstest]
     #[case("one and", "One and")]
