@@ -6,7 +6,7 @@
 //!  *Based on C# version by Jonathan Wood<br>
 //!   Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)*
 //! 
-//! Licensed under the MIT license. see: https://mit-license.org/
+//! Licensed under the MIT license. see: <https://mit-license.org/>
 //! <br>
 //! **Liabilities**<br>
 //! <br>
