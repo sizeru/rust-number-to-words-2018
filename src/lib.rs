@@ -9,6 +9,10 @@
    Licensed under the MIT license.
 */
 
+/* 
+    TODO add tests for handle_tens()
+*/
+
 static ONES: [&str; 10] = [
     "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
 ];
@@ -117,7 +121,6 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
                 // Default case. Do nothing?
             }
         }
-
     }
 
     if should_capitalise_first_word {
@@ -128,7 +131,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
         cents.remove(0);
     }
     // Append cents
-    result + "and " + &cents + "/100"
+    if cents == "0" {result} else {result + "and " + &cents + "/100"}
 }
 
 fn round_and_format_number(num: f64) -> String {
@@ -180,7 +183,7 @@ mod tests {
 
     #[rstest]
     #[case(0.099, true, "Zero and 10/100")] // Case1
-    #[case(1.0, true, "One and 0/100")] // Case 2
+    #[case(1.0, true, "One ")] // Case 2
     #[case(15.04, true, "Fifteen and 4/100")] // Case 3
     #[case(99988389.123, true, // Case 4
         "Ninety-nine million, \
@@ -209,7 +212,7 @@ mod tests {
         nine hundred ninety-nine thousand, \
         nine hundred ninety-nine and 1/100"
     )]
-    #[case(999_999_999_999.9999, true, "One trillion and 0/100")] // Case 8
+    #[case(999_999_999_999.9999, true, "One trillion ")] // Case 8
     #[case(9_999_999_999_999.09999, true, "Nine trillion, nine hundred ninety-nine billion, nine hundred ninety-nine million, nine hundred ninety-nine thousand, nine hundred ninety-nine and 10/100")] // Case 9
     #[case(9_999_999_999_999.989, true, "Nine trillion, nine hundred ninety-nine billion, nine hundred ninety-nine million, nine hundred ninety-nine thousand, nine hundred ninety-nine and 99/100")] // Case 10
     #[case(9_999_999_999_999.99, true, // Case 11
@@ -224,17 +227,17 @@ mod tests {
     }
 
     #[rstest]
-    #[case(1, false, "one and 0/100")]
-    #[case(15, false, "fifteen and 0/100")]
-    #[case(1266, false, "one thousand, two hundred sixty-six and 0/100")]
+    #[case(1, false, "one ")]
+    #[case(15, false, "fifteen ")]
+    #[case(1266, false, "one thousand, two hundred sixty-six ")]
     #[case(
         1230812,
         false,
-        "one million, two hundred thirty thousand, eight hundred twelve and 0/100"
+        "one million, two hundred thirty thousand, eight hundred twelve "
     )]
     #[case(99988389,
         false,
-        "ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 0/100"
+        "ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine "
     )]
     fn test_signed_integer_inputs(
         #[case] input: i32,
@@ -245,27 +248,27 @@ mod tests {
     }
 
     #[rstest]
-    #[case(1, true, "One and 0/100")]
-    #[case(15, true, "Fifteen and 0/100")]
+    #[case(1, true, "One ")]
+    #[case(15, true, "Fifteen ")]
     #[case(
         1266,
         true,
         "One thousand, \
-        two hundred sixty-six and 0/100"
+        two hundred sixty-six "
     )]
     #[case(
         1230812,
         true,
         "One million, \
         two hundred thirty thousand, \
-        eight hundred twelve and 0/100"
+        eight hundred twelve "
     )]
     #[case(
         99988389,
         true,
         "Ninety-nine million, \
         nine hundred eighty-eight thousand, \
-        three hundred eighty-nine and 0/100"
+        three hundred eighty-nine "
     )]
     fn test_unsigned_integer_inputs(
         #[case] input: u32,
