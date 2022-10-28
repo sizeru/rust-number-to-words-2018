@@ -1,14 +1,47 @@
-/*
-   Rust implementation program to convert f64 number to a string of words
-
-   Copyright (c) NexPro 2022
-
-   Based on Original C# implementation by Jonathan Wood
-   Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)
-
-   Licensed under the MIT license.
-*/
-
+//! 
+//! A function to convert a number to a string of words.
+//! ====================================================
+//! 
+//! **Copyright (c) NexPro 2022**<br><br>
+//!  *Based on C# version by Jonathan Wood<br>
+//!   Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)*
+//! 
+//! Licensed under the MIT license. see: https://mit-license.org/
+//! <br>
+//! **Liabilities**<br>
+//! <br>
+//! THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESSED OR IMPLIED,<br>
+//! INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,<br>
+//! FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.<br>
+//! IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,<br>
+//! DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,<br>
+//! ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//!<br>
+//! 
+//! **Purpose:**
+//!
+//! Converts a number to a rust **std::string String** representation of the number in words
+//! with the part after the decimal point represented as **xx/100**
+//! 
+//! Typical uses would be for cheque printing or remittance notices.
+//! 
+//!
+//! **Examples:**<br>
+//! <br>
+//! Calling **number_to_words(99988389.123, true)** will return the String:
+//!     <br>    **Ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 12/100**<br>
+//! 
+//! Calling **number_to_words(99988389.123, false)** will return the String:
+//!     <br>    **ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 12/100**<br>
+//!
+//! Calling **number_to_words(10.0, true)** will return the String:
+//!     <br> **Ten** *
+//!     <br><br>     * *note: There is currently a trailing space for results without cents.*
+//!<br>
+//! <br>
+//! **Errors:**<br>
+//! <br>
+//! Numbers greater than 9_999_999_999_999.99 will return the String: **Number too large**
 /* 
     TODO add tests for handle_tens()
 */
@@ -46,7 +79,7 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
     // Convert to f64 and ensure number is positive value
     let number = num::abs(number.into());
     if number > LARGEST_ALLOWABLE_INPUT_VALUE {
-        return "Number too large".to_owned();
+        return "number too large".to_owned();
     }
     let formatted_num: String = round_and_format_number(number);
     let split_number = split_on_decimal_point(formatted_num);
@@ -221,6 +254,12 @@ mod tests {
         nine hundred ninety-nine million, \
         nine hundred ninety-nine thousand, \
         nine hundred ninety-nine and 99/100"
+    )]
+    #[case(9_999_999_999_999.9999, true, // Case 12
+        "number too large"
+    )]
+    #[case(0.999_999_999_999_999_999_999_999_999_999_999_999_999_999_999_999_999, true, // Case 13
+        "One "
     )]
     fn test_float_inputs(#[case] input: f64, #[case] capitalise: bool, #[case] expected: &str) {
         assert_eq!(number_to_words(input, capitalise), expected);

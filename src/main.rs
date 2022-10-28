@@ -1,4 +1,4 @@
-use number_to_text::number_to_words;
+use number_to_words::number_to_words;
 
 fn main() {
     // test here

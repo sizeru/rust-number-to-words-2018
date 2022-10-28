@@ -192,7 +192,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "number_to_text"
+name = "number_to_words"
 version = "0.1.0"
 dependencies = [
  "num",
