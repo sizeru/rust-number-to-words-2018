@@ -1,11 +1,11 @@
-//! 
+//!
 //! A function to convert a number to a string of words.
 //! ====================================================
-//! 
+//!
 //! **Copyright (c) NexPro 2022**<br><br>
 //!  *Based on C# version by Jonathan Wood<br>
 //!   Copyright (c) 2019-2020 Jonathan Wood (www.softcircuits.com)*
-//! 
+//!
 //! Licensed under the MIT license. see: <https://mit-license.org/>
 //! <br>
 //! **Liabilities**<br>
@@ -17,20 +17,20 @@
 //! DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,<br>
 //! ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //!<br>
-//! 
+//!
 //! **Purpose:**
 //!
 //! Converts a number to a rust **std::string String** representation of the number in words
 //! with the part after the decimal point represented as **xx/100**
-//! 
+//!
 //! Typical uses would be for cheque printing or remittance notices.
-//! 
+//!
 //!
 //! **Examples:**<br>
 //! <br>
 //! Calling **number_to_words(99988389.123, true)** will return the String:
 //!     <br>    **Ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 12/100**<br>
-//! 
+//!
 //! Calling **number_to_words(99988389.123, false)** will return the String:
 //!     <br>    **ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine and 12/100**<br>
 //!
@@ -42,7 +42,7 @@
 //! **Errors:**<br>
 //! <br>
 //! Numbers greater than 9_999_999_999_999.99 will return the String: **Number too large**
-/* 
+/*
     TODO add tests for handle_tens()
 */
 
@@ -164,7 +164,11 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
         cents.remove(0);
     }
     // Append cents
-    if cents == "0" {result} else {result + "and " + &cents + "/100"}
+    if cents == "0" {
+        result
+    } else {
+        result + "and " + &cents + "/100"
+    }
 }
 
 fn round_and_format_number(num: f64) -> String {
@@ -246,8 +250,18 @@ mod tests {
         nine hundred ninety-nine and 1/100"
     )]
     #[case(999_999_999_999.9999, true, "One trillion ")] // Case 8
-    #[case(9_999_999_999_999.09999, true, "Nine trillion, nine hundred ninety-nine billion, nine hundred ninety-nine million, nine hundred ninety-nine thousand, nine hundred ninety-nine and 10/100")] // Case 9
-    #[case(9_999_999_999_999.989, true, "Nine trillion, nine hundred ninety-nine billion, nine hundred ninety-nine million, nine hundred ninety-nine thousand, nine hundred ninety-nine and 99/100")] // Case 10
+    #[case(9_999_999_999_999.09999, true, // Case 9
+        "Nine trillion, nine hundred ninety-nine billion, \
+        nine hundred ninety-nine million, \
+        nine hundred ninety-nine thousand, \
+        nine hundred ninety-nine and 10/100"
+    )]
+    #[case(9_999_999_999_999.989, true, // Case 10
+        "Nine trillion, nine hundred ninety-nine billion, \
+        nine hundred ninety-nine million, \
+        nine hundred ninety-nine thousand, \
+        nine hundred ninety-nine and 99/100"
+    )]
     #[case(9_999_999_999_999.99, true, // Case 11
         "Nine trillion, \
         nine hundred ninety-nine billion, \
@@ -261,6 +275,10 @@ mod tests {
     #[case(0.999_999_999_999_999_999_999_999_999_999_999_999_999_999_999_999_999, true, // Case 13
         "One "
     )]
+    #[case("222.22", true, "Two hundred twenty-two and 22/100")]
+    #[case("1.1e+6", true, "One million, one hundred thousand ")]
+    #[case("-1.1e+6", true, "One million, one hundred thousand ")]
+
     fn test_float_inputs(#[case] input: f64, #[case] capitalise: bool, #[case] expected: &str) {
         assert_eq!(number_to_words(input, capitalise), expected);
     }
@@ -272,11 +290,16 @@ mod tests {
     #[case(
         1230812,
         false,
-        "one million, two hundred thirty thousand, eight hundred twelve "
+        "one million, \
+        two hundred thirty thousand, \
+        eight hundred twelve "
     )]
-    #[case(99988389,
+    #[case(
+        99988389,
         false,
-        "ninety-nine million, nine hundred eighty-eight thousand, three hundred eighty-nine "
+        "ninety-nine million, \
+        nine hundred eighty-eight thousand, \
+        three hundred eighty-nine "
     )]
     fn test_signed_integer_inputs(
         #[case] input: i32,
@@ -309,6 +332,7 @@ mod tests {
         nine hundred eighty-eight thousand, \
         three hundred eighty-nine "
     )]
+    #[case("10.0e+6", true, "Ten million ")]
     fn test_unsigned_integer_inputs(
         #[case] input: u32,
         #[case] capitalise: bool,
@@ -333,6 +357,15 @@ mod tests {
         assert_eq!(split_on_decimal_point(input), expected);
     }
 
+    #[rstest]
+
+    fn number_as_string_test(
+        #[case] input: &str,
+        #[case] capitalise: bool,
+        #[case] expected: String,
+    ) {
+        assert_eq!(number_to_words(input, capitalise), expected);
+    }
     // Tests for capitalise_first_word()
     #[rstest]
     #[case("one and", "One and")]
