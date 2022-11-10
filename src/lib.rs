@@ -36,7 +36,6 @@
 //!
 //! Calling **number_to_words(10.0, true)** will return the String:
 //!     <br> **Ten** *
-//!     <br><br>     * *note: There is currently a trailing space for results without cents.*
 //!<br>
 //! <br>
 //! **Errors:**<br>
