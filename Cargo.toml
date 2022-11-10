@@ -9,7 +9,7 @@ repository = "https://github.com/Nex-Pro/rust-number-to-words"
 keywords = ["utility", "number", "finance", "banking"]
 categories = ["command-line-utilities", "development-tools::cargo-plugins"]
 
-version = "0.1.0"
+version = "0.1.1"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
