@@ -165,6 +165,8 @@ pub fn number_to_words<T: std::convert::Into<f64>>(
     }
     // Append cents
     if cents == "0" {
+        // Remove trailing space
+        result.pop();
         result
     } else {
         result + "and " + &cents + "/100"
@@ -220,7 +222,7 @@ mod tests {
 
     #[rstest]
     #[case(0.099, true, "Zero and 10/100")] // Case1
-    #[case(1.0, true, "One ")] // Case 2
+    #[case(1.0, true, "One")] // Case 2
     #[case(15.04, true, "Fifteen and 4/100")] // Case 3
     #[case(99988389.123, true, // Case 4
         "Ninety-nine million, \
@@ -249,7 +251,7 @@ mod tests {
         nine hundred ninety-nine thousand, \
         nine hundred ninety-nine and 1/100"
     )]
-    #[case(999_999_999_999.9999, true, "One trillion ")] // Case 8
+    #[case(999_999_999_999.9999, true, "One trillion")] // Case 8
     #[case(9_999_999_999_999.09999, true, // Case 9
         "Nine trillion, nine hundred ninety-nine billion, \
         nine hundred ninety-nine million, \
@@ -273,33 +275,34 @@ mod tests {
         "number too large"
     )]
     #[case(0.999_999_999_999_999_999_999_999_999_999_999_999_999_999_999_999_999, true, // Case 13
-        "One "
+        "One"
     )]
     #[case("222.22", true, "Two hundred twenty-two and 22/100")]
-    #[case("1.1e+6", true, "One million, one hundred thousand ")]
-    #[case("-1.1e+6", true, "One million, one hundred thousand ")]
+    #[case("1.1e+6", true, "One million, one hundred thousand")]
+    #[case("-1.1e+6", true, "One million, one hundred thousand")]
+    #[case("10.0e+6", true, "Ten million")]
 
     fn test_float_inputs(#[case] input: f64, #[case] capitalise: bool, #[case] expected: &str) {
         assert_eq!(number_to_words(input, capitalise), expected);
     }
 
     #[rstest]
-    #[case(1, false, "one ")]
-    #[case(15, false, "fifteen ")]
-    #[case(1266, false, "one thousand, two hundred sixty-six ")]
+    #[case(1, false, "one")]
+    #[case(15, false, "fifteen")]
+    #[case(1266, false, "one thousand, two hundred sixty-six")]
     #[case(
         1230812,
         false,
         "one million, \
         two hundred thirty thousand, \
-        eight hundred twelve "
+        eight hundred twelve"
     )]
     #[case(
         99988389,
         false,
         "ninety-nine million, \
         nine hundred eighty-eight thousand, \
-        three hundred eighty-nine "
+        three hundred eighty-nine"
     )]
     fn test_signed_integer_inputs(
         #[case] input: i32,
@@ -310,29 +313,29 @@ mod tests {
     }
 
     #[rstest]
-    #[case(1, true, "One ")]
-    #[case(15, true, "Fifteen ")]
+    #[case(1, true, "One")]
+    #[case(15, true, "Fifteen")]
     #[case(
         1266,
         true,
         "One thousand, \
-        two hundred sixty-six "
+        two hundred sixty-six"
     )]
     #[case(
         1230812,
         true,
         "One million, \
         two hundred thirty thousand, \
-        eight hundred twelve "
+        eight hundred twelve"
     )]
     #[case(
         99988389,
         true,
         "Ninety-nine million, \
         nine hundred eighty-eight thousand, \
-        three hundred eighty-nine "
+        three hundred eighty-nine"
     )]
-    #[case("10.0e+6", true, "Ten million ")]
+    
     fn test_unsigned_integer_inputs(
         #[case] input: u32,
         #[case] capitalise: bool,
