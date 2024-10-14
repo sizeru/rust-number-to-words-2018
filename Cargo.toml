@@ -1,5 +1,5 @@
 [package]
-edition = "2021"
+edition = "2018"
 license = "MIT"
 name = "number_to_words"
 authors = ["Nex-Pro", "NexPro", "bwintertkb"]
@@ -14,7 +14,7 @@ version = "0.1.1"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-num = "0.4.0"
+num = "0.4.2" # 0.4.3 uses rust 2021
 
 [dev-dependencies]
-rstest = "0.15.0"
+rstest = "0.11.0" # 0.12.0 uses rust 2021
